@@ -5,10 +5,10 @@ pragma solidity ^0.8.0;
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
 
-contract MSN_MINING {
+contract MSNN_MINING {
     uint256 public payable_amount;
 
-    address private MSNAddr;
+    address private MSNNAddr;
     address private MiningOwner;
 
     mapping(address => string) private keepers; //keeper account can add add_merkle_root
@@ -17,9 +17,9 @@ contract MSN_MINING {
 
     mapping(address => uint256) private acc_staking;
 
-    constructor(address _MSNcontractAddr) {
+    constructor(address _MSNNcontractAddr) {
         MiningOwner = msg.sender;
-        MSNAddr = _MSNcontractAddr;
+        MSNNAddr = _MSNNcontractAddr;
         keepers[msg.sender] = "MiningOwner";
     }
 
@@ -57,11 +57,11 @@ contract MSN_MINING {
     }
 
     function get_msn_addr() public view returns (address) {
-        return MSNAddr;
+        return MSNNAddr;
     }
 
     function get_contract_balance() public view returns (uint256) {
-        return IERC20(MSNAddr).balanceOf(address(this));
+        return IERC20(MSNNAddr).balanceOf(address(this));
     }
 
     function get_keeper(address keeper_addr)
@@ -182,7 +182,7 @@ contract MSN_MINING {
         merkleRoots[merkleRoot] -= amount;
 
         claimed[merkleRoot][index] = true;
-        bool result = IERC20(MSNAddr).transfer(msg.sender, amount);
+        bool result = IERC20(MSNNAddr).transfer(msg.sender, amount);
         require(result == true, "transfer error");
         emit claim_erc20_EVENT(msg.sender, merkleRoot, amount, block.timestamp);
     }
@@ -203,12 +203,12 @@ contract MSN_MINING {
     );
 
     function stake_token(uint256 amount, string calldata userid) external {
-        uint256 allowance = IERC20(MSNAddr).allowance(
+        uint256 allowance = IERC20(MSNNAddr).allowance(
             msg.sender,
             address(this)
         );
         require(allowance > 0, "Not allowed");
-        bool t_result = IERC20(MSNAddr).transferFrom(
+        bool t_result = IERC20(MSNNAddr).transferFrom(
             msg.sender,
             address(this),
             amount
@@ -251,9 +251,9 @@ contract MSN_MINING {
     );
 
     function withdraw_contract() public onlyMiningOwner {
-        uint256 left = IERC20(MSNAddr).balanceOf(address(this));
+        uint256 left = IERC20(MSNNAddr).balanceOf(address(this));
         require(left > 0, "No balance");
-        IERC20(MSNAddr).transfer(msg.sender, left);
+        IERC20(MSNNAddr).transfer(msg.sender, left);
         emit withdraw_contract_EVENT(
             msg.sender,
             address(this),

@@ -5,7 +5,7 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
-contract MSN_DAO {
+contract MSNN_DAO {
     uint256 public payable_amount;
 
     struct Proposal {
@@ -21,16 +21,16 @@ contract MSN_DAO {
 
     string private ProposalFolderUrl; // the detailed proposal description is inside this folder
     address private DAOOwner;
-    address private MSNAddr;
+    address private MSNNAddr;
 
     mapping(address => string) private keepers; // who can create and manage proposals
     mapping(address => uint256) private deposit; // depositor => amount
     mapping(address => uint256) private deposit_lasttime; // depositor => last vote time
     uint256 private voter_hold_secs; // how long in seconds to keep before voters withdraw
 
-    constructor(address _MSNcontractAddr, uint256 _voter_hold_secs) {
+    constructor(address _MSNNcontractAddr, uint256 _voter_hold_secs) {
         DAOOwner = msg.sender;
-        MSNAddr = _MSNcontractAddr;
+        MSNNAddr = _MSNNcontractAddr;
         keepers[msg.sender] = "DAOOwner";
         voter_hold_secs = _voter_hold_secs;
     }
@@ -217,12 +217,12 @@ contract MSN_DAO {
     );
 
     function deposit_token(uint256 amount) external {
-        uint256 allowance = IERC20(MSNAddr).allowance(
+        uint256 allowance = IERC20(MSNNAddr).allowance(
             msg.sender,
             address(this)
         );
         require(allowance > 0, "Not allowed");
-        bool t_result = IERC20(MSNAddr).transferFrom(
+        bool t_result = IERC20(MSNNAddr).transferFrom(
             msg.sender,
             address(this),
             amount
@@ -299,7 +299,7 @@ contract MSN_DAO {
         uint256 d_amount = deposit[msg.sender];
         require(d_amount >= amount, "not enough to withdraw");
         deposit[msg.sender] = d_amount - amount;
-        bool t_result = IERC20(MSNAddr).transfer(msg.sender, amount);
+        bool t_result = IERC20(MSNNAddr).transfer(msg.sender, amount);
         require(t_result == true, "transfer error");
         emit withdraw_token_EVENT(msg.sender, amount, block.timestamp);
     }
@@ -335,9 +335,9 @@ contract MSN_DAO {
     );
 
     function withdraw_contract() public onlyDAOOwner {
-        uint256 left = IERC20(MSNAddr).balanceOf(address(this));
+        uint256 left = IERC20(MSNNAddr).balanceOf(address(this));
         require(left > 0, "No Balance");
-        IERC20(MSNAddr).transfer(msg.sender, left);
+        IERC20(MSNNAddr).transfer(msg.sender, left);
         emit withdraw_contract_EVENT(
             msg.sender,
             address(this),
