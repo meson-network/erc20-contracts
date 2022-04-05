@@ -540,4 +540,4 @@
         "stateMutability": "payable",
         "type": "receive"
     }
-],
+]
