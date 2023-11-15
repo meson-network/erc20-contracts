@@ -5,6 +5,13 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
 contract MSN is ERC20 {
     address public contract_owner;
+
+    modifier onlyContractOwner() {
+        require(msg.sender == contract_owner, "Only contractOwner");
+        _;
+    }
+
+
     uint256 public ini_supply;
     uint256 public ini_timestamp;
 
@@ -49,11 +56,6 @@ contract MSN is ERC20 {
         uint256 total_mint_limit = past_years_mint_limit + (past_days_num + 1 - 365 * past_years_num) * mint_ratio_this_year;
 
         return (total_mint_limit * ini_supply) / 1000;
-    }
-
-    modifier onlyContractOwner() {
-        require(msg.sender == contract_owner, "Only contractOwner");
-        _;
     }
 
     constructor(
