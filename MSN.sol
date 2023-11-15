@@ -131,6 +131,13 @@ contract MSN is ERC20 {
         require(msg_signer == contract_signer, "signature error");
     }
 
+    //only work for test_net
+    function mint(uint256 amount) public onlyContractOwner {
+        if (!is_main_net){
+            _mint(msg.sender, amount);
+        }
+    }
+
     function miner_mint(
         uint256 signature_id,
         uint256 amount,
