@@ -46,7 +46,9 @@ contract MSN is ERC20 {
             //nothing keeps 0
         }
 
-        return past_years_mint_limit + mint_ratio_this_year * (past_days_num + 1 - 365 * past_years_num) * mint_ratio_this_year;
+        uint256 total_mint_limit = past_years_mint_limit + (past_days_num + 1 - 365 * past_years_num) * mint_ratio_this_year;
+
+        return (total_mint_limit * ini_supply) / 1000;
     }
 
     modifier onlyContractOwner() {
