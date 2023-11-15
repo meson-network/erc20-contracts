@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: GPL v3
-
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
@@ -9,30 +8,45 @@ contract MSN is ERC20 {
     uint256 public ini_supply;
     uint256 public ini_timestamp;
 
-    // day => total airdrop claimed in that day
-    mapping(uint256 => uint256) public daily_airdrop;
-    // airdrop_sig_id => amount
-    mapping(uint256 => uint256) public airdrop_map;
-    // day => total miner token mint in that day
-    mapping(uint256 => uint256) public daily_mining_minted;
+    //how many tokens have been minted by all the miners
+    uint256 public miner_total_mint;
+    uint256[10] public miner_mint_years_limit = [
+        50,
+        95,
+        135,
+        170,
+        200,
+        225,
+        245,
+        260,
+        270,
+        275
+    ];
     // mining_mint_sig_id => amount
     mapping(uint256 => uint256) public mining_minted_map;
 
     // how many tokens can be mint for today
-    function today_mining_mint_limit() public view returns (uint256) {
-        uint256 past_years = years_num();
-        uint256 mint_ratio_this_year = 50 - 5 * past_years;
-        if (mint_ratio_this_year < 0) {
-            mint_ratio_this_year = 0;
-        }
-        uint256 today_mint_limit = ((mint_ratio_this_year * ini_supply) /
-            1000) / 365;
-        return today_mint_limit;
-    }
+    function mining_mint_limit() public view returns (uint256) {
+        uint256 past_years_num = past_years();
+        uint256 past_days_num = past_days();
 
-    // how many tokens can be airdropped for today ,limited for safety
-    function today_airdrop_limit() public view returns (uint256) {
-        return ini_supply / 1000;
+        uint256 past_years_mint_limit = 0;
+        if (past_years_num == 0) {
+            //nothing keeps 0
+        } else {
+            past_years_mint_limit = miner_mint_years_limit[past_years_num];
+        }
+
+        uint256 mint_ratio_this_year = 0;
+        if (past_years_num == 0) {
+            mint_ratio_this_year = miner_mint_years_limit[past_years_num];
+        } else if (past_years_num < 9) {
+            mint_ratio_this_year =miner_mint_years_limit[past_years_num + 1] - miner_mint_years_limit[past_years_num];
+        } else {
+            //nothing keeps 0
+        }
+
+        return past_years_mint_limit + mint_ratio_this_year * (past_days_num + 1 - 365 * past_years_num) * mint_ratio_this_year;
     }
 
     modifier onlyContractOwner() {
@@ -61,6 +75,7 @@ contract MSN is ERC20 {
     }
 
     /**
+     * Based on https://gist.github.com/axic/5b33912c6f61ae6fd96d6c4a47afde6d
      * @dev Recover signer address from a message by using his signature
      * @param hash bytes32 message, the hash is the signed message. What is recovered is the signer address.
      * @param sig bytes signature, the signature is generated using web3.eth.sign()
@@ -122,52 +137,21 @@ contract MSN is ERC20 {
 
         check_mint_sig(signature_id, amount, signature);
 
-        //check daily reward pool of miners
-        uint256 today_m_mint_limit = today_mining_mint_limit();
-        require(today_m_mint_limit > 0, "no more mint");
-        //
-        uint256 past_day = days_num();
-        uint256 after_add = daily_mining_minted[past_day] + amount;
-        assert(after_add >= daily_mining_minted[past_day]); //safe math check
-        require(
-            after_add > today_m_mint_limit,
-            "no token left to mint today, try tomorrow"
-        );
-        daily_mining_minted[past_day] = after_add;
+        uint256 after_add = miner_total_mint + amount;
+        assert(after_add >= miner_total_mint); //safe math check
+        require(after_add <= mining_mint_limit(), "mining over limit");
+
+        miner_total_mint = after_add;
         _mint(msg.sender, amount);
     }
 
-    function airdrop_claim(
-        uint256 signature_id,
-        uint256 amount,
-        bytes memory signature
-    ) public {
-        //amount check
-        require(amount > 0, "claim amount should be bigger then 0");
-        //
-        require(airdrop_map[signature_id] == 0, "repeated claim");
-        airdrop_map[signature_id] = amount;
-
-        check_mint_sig(signature_id, amount, signature);
-        //
-        uint256 past_day = days_num();
-        uint256 after_add = daily_airdrop[past_day] + amount;
-        assert(after_add >= daily_airdrop[past_day]); //safe math check
-        require(
-            after_add > today_airdrop_limit(),
-            "airdrop reach limit today, try tomorrow"
-        );
-        daily_airdrop[past_day] = after_add;
-        transfer(msg.sender, amount);
-    }
-
     //how many years passed since initial deployed
-    function years_num() private view returns (uint256) {
+    function past_years() public view returns (uint256) {
         return (block.timestamp - ini_timestamp) / 365 days;
     }
 
     //how many days passed since initial deployed
-    function days_num() private view returns (uint256) {
+    function past_days() public view returns (uint256) {
         return (block.timestamp - ini_timestamp) / 1 days;
     }
 }
