@@ -4,17 +4,11 @@ pragma solidity ^0.8.0;
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
 contract MSN is ERC20 {
+    bool public is_main_net;
     address public contract_owner;
-
-    modifier onlyContractOwner() {
-        require(msg.sender == contract_owner, "Only contractOwner");
-        _;
-    }
-
-
-    uint256 public ini_supply;
+    uint256 private ini_supply;
     uint256 public ini_timestamp;
-
+     
     //how many tokens have been minted by all the miners
     uint256 public miner_total_mint;
     uint256[10] public miner_mint_years_limit = [
@@ -58,15 +52,24 @@ contract MSN is ERC20 {
         return (total_mint_limit * ini_supply) / 1000;
     }
 
+    modifier onlyContractOwner() {
+        require(msg.sender == contract_owner, "Only contractOwner");
+        _;
+    }
+
     constructor(
+        bool main_net,
         string memory name,
         string memory symbol,
         uint256 inisupply
     ) ERC20(name, symbol) {
+        is_main_net = main_net;
         contract_owner = msg.sender;
         ini_timestamp = block.timestamp;
         ini_supply = inisupply * (10**uint256(decimals()));
-        _mint(msg.sender, ini_supply);
+        if (is_main_net){
+            _mint(msg.sender, ini_supply);
+        }
     }
 
     address public contract_signer;
