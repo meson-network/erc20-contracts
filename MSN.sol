@@ -23,6 +23,7 @@ contract MSN is ERC20 {
         270,
         275
     ];
+    
     // mining_mint_sig_id => amount
     mapping(uint256 => uint256) public mining_minted_map;
 
@@ -65,10 +66,14 @@ contract MSN is ERC20 {
     ) ERC20(name, symbol) {
         is_main_net = main_net;
         contract_owner = msg.sender;
-        ini_timestamp = block.timestamp;
         ini_supply = inisupply * (10**uint256(decimals()));
         if (is_main_net){
+            //main net
             _mint(msg.sender, ini_supply);
+            ini_timestamp = block.timestamp;
+        }else{
+            //testnet simulate a three years old state
+            ini_timestamp = block.timestamp - 3600*24*365*3;
         }
     }
 
