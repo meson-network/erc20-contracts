@@ -31,6 +31,7 @@ contract MSN is ERC20 {
         uint256 past_years_num = past_years();
         uint256 past_days_num = past_days();
 
+        /////////past years total limit //////////////
         uint256 past_years_mint_limit = 0;
         if (past_years_num == 0) {
             //nothing keeps 0
@@ -40,6 +41,7 @@ contract MSN is ERC20 {
             past_years_mint_limit =(miner_mint_years_limit[9] * ini_supply) / 1000;
         }
 
+        /////////this year total limit /////////////////////
         uint256 mint_ratio_this_year = 0;
         if (past_years_num == 0) {
             mint_ratio_this_year = miner_mint_years_limit[past_years_num];
@@ -57,6 +59,7 @@ contract MSN is ERC20 {
             365 /
             1000;
 
+        ///////////////////////////////////////////////////
         return past_years_mint_limit + this_year_limit;
     }
 
