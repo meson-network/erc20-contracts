@@ -80,6 +80,7 @@ contract MSN is ERC20 {
         if (is_main_net) {
             //main net
             _mint(msg.sender, ini_supply);
+            ini_timestamp = block.timestamp;
         } else {
             //testnet simulate a three years old state
             ini_timestamp = block.timestamp - 3600 * 24 * 365 * 3;
