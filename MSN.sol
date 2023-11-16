@@ -8,7 +8,7 @@ contract MSN is ERC20 {
     address public contract_owner;
     uint256 private ini_supply;
     uint256 public ini_timestamp;
-     
+
     //how many tokens have been minted by all the miners
     uint256 public miner_total_mint;
     uint256[10] public miner_mint_years_limit = [
@@ -23,7 +23,6 @@ contract MSN is ERC20 {
         270,
         275
     ];
-
     // mining_mint_sig_id => amount
     mapping(uint256 => uint256) public mining_minted_map;
 
@@ -35,22 +34,30 @@ contract MSN is ERC20 {
         uint256 past_years_mint_limit = 0;
         if (past_years_num == 0) {
             //nothing keeps 0
-        } else {
-            past_years_mint_limit = miner_mint_years_limit[past_years_num];
+        } else if (past_years_num < 10)
+            past_years_mint_limit =(miner_mint_years_limit[past_years_num - 1] * ini_supply) / 1000;
+        else {
+            past_years_mint_limit =(miner_mint_years_limit[9] * ini_supply) / 1000;
         }
 
         uint256 mint_ratio_this_year = 0;
         if (past_years_num == 0) {
             mint_ratio_this_year = miner_mint_years_limit[past_years_num];
-        } else if (past_years_num < 9) {
-            mint_ratio_this_year =miner_mint_years_limit[past_years_num + 1] - miner_mint_years_limit[past_years_num];
+        } else if (past_years_num < 10) {
+            mint_ratio_this_year =
+                miner_mint_years_limit[past_years_num] -
+                miner_mint_years_limit[past_years_num - 1];
         } else {
             //nothing keeps 0
         }
 
-        uint256 total_mint_limit = past_years_mint_limit + (past_days_num + 1 - 365 * past_years_num) * mint_ratio_this_year;
+        uint256 this_year_limit = ((past_days_num + 1 - 365 * past_years_num) *
+            ini_supply *
+            mint_ratio_this_year) /
+            365 /
+            1000;
 
-        return (total_mint_limit * ini_supply) / 1000;
+        return past_years_mint_limit + this_year_limit;
     }
 
     modifier onlyContractOwner() {
@@ -67,13 +74,12 @@ contract MSN is ERC20 {
         is_main_net = main_net;
         contract_owner = msg.sender;
         ini_supply = inisupply * (10**uint256(decimals()));
-        if (is_main_net){
+        if (is_main_net) {
             //main net
             _mint(msg.sender, ini_supply);
-            ini_timestamp = block.timestamp;
-        }else{
+        } else {
             //testnet simulate a three years old state
-            ini_timestamp = block.timestamp - 3600*24*365*3;
+            ini_timestamp = block.timestamp - 3600 * 24 * 365 * 3;
         }
     }
 
@@ -87,7 +93,7 @@ contract MSN is ERC20 {
     }
 
     /**
-     * recover function Based on https://github.com/protofire/zeppelin-solidity/blob/master/contracts/ECRecovery.sol
+     * Based on https://gist.github.com/axic/5b33912c6f61ae6fd96d6c4a47afde6d
      * @dev Recover signer address from a message by using his signature
      * @param hash bytes32 message, the hash is the signed message. What is recovered is the signer address.
      * @param sig bytes signature, the signature is generated using web3.eth.sign()
@@ -138,7 +144,7 @@ contract MSN is ERC20 {
 
     //only work for test_net
     function mint(uint256 amount) public onlyContractOwner {
-        if (!is_main_net){
+        if (!is_main_net) {
             _mint(msg.sender, amount);
         }
     }
