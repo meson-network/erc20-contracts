@@ -23,7 +23,7 @@ contract MSN is ERC20 {
         270,
         275
     ];
-    
+
     // mining_mint_sig_id => amount
     mapping(uint256 => uint256) public mining_minted_map;
 
@@ -87,7 +87,7 @@ contract MSN is ERC20 {
     }
 
     /**
-     * Based on https://gist.github.com/axic/5b33912c6f61ae6fd96d6c4a47afde6d
+     * recover function Based on https://github.com/protofire/zeppelin-solidity/blob/master/contracts/ECRecovery.sol
      * @dev Recover signer address from a message by using his signature
      * @param hash bytes32 message, the hash is the signed message. What is recovered is the signer address.
      * @param sig bytes signature, the signature is generated using web3.eth.sign()
