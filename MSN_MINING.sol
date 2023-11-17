@@ -5,7 +5,7 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 contract MSN_MINING {
     address public msn_contract_address;
-    uint256 public msn_initial_supply;
+    uint256 public mining_inflation_base;
 
     //mining
     address public miner_signer;
@@ -35,11 +35,11 @@ contract MSN_MINING {
 
     constructor(
         address _msn_contract_addr,
-        uint256 _msn_initial_supply,
+        uint256 _mining_inflation_base,
         uint256 _mining_start_time
     ) {
         msn_contract_address = _msn_contract_addr;
-        msn_initial_supply = _msn_initial_supply;
+        mining_inflation_base = _mining_inflation_base;
         contract_owner = msg.sender;
         mining_start_timestamp = _mining_start_time;
     }
@@ -64,11 +64,11 @@ contract MSN_MINING {
         } else if (past_years_num < 10)
             past_years_mint_limit =
                 (miner_mint_years_limit[past_years_num - 1] *
-                    msn_initial_supply) /
+                    mining_inflation_base) /
                 1000;
         else {
             past_years_mint_limit =
-                (miner_mint_years_limit[9] * msn_initial_supply) /
+                (miner_mint_years_limit[9] * mining_inflation_base) /
                 1000;
         }
 
@@ -85,7 +85,7 @@ contract MSN_MINING {
         }
 
         uint256 this_year_limit = ((past_days_num + 1 - 365 * past_years_num) *
-            msn_initial_supply *
+            mining_inflation_base *
             mint_ratio_this_year) /
             365 /
             1000;
