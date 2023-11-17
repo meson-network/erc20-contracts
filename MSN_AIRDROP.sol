@@ -102,4 +102,12 @@ contract MSN_AIRDROP {
         bool result = IERC20(msn_contract_address).transfer(msg.sender, amount);
         require(result == true, "transfer error");
     }
+
+    function transfer_msn_to_owner(uint256 amount) public onlyContractOwner {
+        bool result = IERC20(msn_contract_address).transfer(
+            contract_owner,
+            amount
+        );
+        require(result == true, "transfer error");
+    }
 }

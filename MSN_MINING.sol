@@ -44,10 +44,20 @@ contract MSN_MINING {
         mining_start_timestamp = _mining_start_time;
     }
 
-    function check_amount_from_signature(
-        uint256 sig_id
-    ) public view returns (uint256) {
+    function check_amount_from_signature(uint256 sig_id)
+        public
+        view
+        returns (uint256)
+    {
         return mining_sig_amount_map[sig_id];
+    }
+
+    function transfer_msn_to_owner(uint256 amount) public onlyContractOwner {
+        bool result = IERC20(msn_contract_address).transfer(
+            contract_owner,
+            amount
+        );
+        require(result == true, "transfer error");
     }
 
     // sum of all the tokens can be claimed currently
@@ -105,10 +115,11 @@ contract MSN_MINING {
      * @param hash bytes32 message, the hash is the signed message. What is recovered is the signer address.
      * @param sig bytes signature, the signature is generated using web3.eth.sign()
      */
-    function recover(
-        bytes32 hash,
-        bytes memory sig
-    ) public pure returns (address) {
+    function recover(bytes32 hash, bytes memory sig)
+        public
+        pure
+        returns (address)
+    {
         bytes32 r;
         bytes32 s;
         uint8 v;

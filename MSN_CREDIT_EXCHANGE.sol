@@ -60,4 +60,12 @@ contract MSN_CREDIT_EXCHANGE {
             address_tx_counter_map[msg.sender] +
             1;
     }
+
+    function transfer_msn_to_owner(uint256 amount) public onlyContractOwner {
+        bool result = IERC20(msn_contract_address).transfer(
+            contract_owner,
+            amount
+        );
+        require(result == true, "transfer error");
+    }
 }
