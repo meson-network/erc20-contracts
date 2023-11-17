@@ -6,12 +6,7 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 contract MSN_CREDIT_EXCHANGE {
     address public msn_contract_address;
     uint256 public exchange_ratio; // exchanged msn credit amount = (msn amount) * exchange_ratio
-
-    address public contract_owner;
-    modifier onlyContractOwner() {
-        require(msg.sender == contract_owner, "Only contractOwner");
-        _;
-    }
+    uint256 public msn_credit_exchanged_total; // exchanged total amount of msn credit
 
     mapping(address => uint256) private address_msn_credit_map; // address => msn credit amount
 
@@ -23,6 +18,12 @@ contract MSN_CREDIT_EXCHANGE {
 
     function tx_counter_of(address addr) public view returns (uint256) {
         return address_tx_counter_map[addr];
+    }
+
+    address public contract_owner;
+    modifier onlyContractOwner() {
+        require(msg.sender == contract_owner, "Only contractOwner");
+        _;
     }
 
     constructor(address _msn_contract_addr) {
@@ -48,6 +49,8 @@ contract MSN_CREDIT_EXCHANGE {
         require(result == true, "transfer error");
 
         uint256 msn_credit = amount * exchange_ratio;
+
+        msn_credit_exchanged_total = msn_credit_exchanged_total + msn_credit;
 
         address_msn_credit_map[msg.sender] =
             address_msn_credit_map[msg.sender] +
