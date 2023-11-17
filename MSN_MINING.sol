@@ -44,12 +44,12 @@ contract MSN_MINING {
         mining_start_timestamp = _mining_start_time;
     }
 
-    function check_mining_minted(uint256 sig_id) public view returns (bool) {
-        if (mining_sig_minted_map[sig_id] == 0) {
-            return false;
-        } else {
-            return true;
-        }
+    function get_mining_minted_from_signature(uint256 sig_id)
+        public
+        view
+        returns (uint256)
+    {
+        return mining_sig_minted_map[sig_id];
     }
 
     // sum of all the tokens can be minted currently
@@ -148,14 +148,13 @@ contract MSN_MINING {
         require(msg_signer == miner_signer, "signature error");
     }
 
- 
     function miner_mint(
         uint256 signature_id,
         uint256 amount,
         bytes memory signature
     ) public {
         require(amount > 0, "mint amount should be bigger then 0");
-        
+
         require(mining_sig_minted_map[signature_id] == 0, "repeated mint");
         mining_sig_minted_map[signature_id] = amount;
 
