@@ -23,8 +23,16 @@ contract MSN is ERC20 {
         270,
         275
     ];
+    
     // mining_mint_sig_id => amount
-    mapping(uint256 => uint256) public mining_minted_map;
+    mapping(uint256 => uint256) private mining_minted_map;
+    function check_mining_minted(uint256 sig_id) public view returns (bool) {
+        if (mining_minted_map[sig_id] == 0) {
+            return false;
+        } else {
+            return true;
+        }
+    }
 
     // how many tokens can be mint for today
     function mining_mint_limit() public view returns (uint256) {
