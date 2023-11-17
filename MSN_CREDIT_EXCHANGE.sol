@@ -15,17 +15,13 @@ contract MSN_CREDIT_EXCHANGE {
 
     mapping(address => uint256) private address_msn_credit_map; // address => msn credit amount
 
-    function get_address_msn_credit_amount(
-        address addr
-    ) public view returns (uint256) {
+    function msn_credit_balance_of(address addr) public view returns (uint256) {
         return address_msn_credit_map[addr];
     }
 
     mapping(address => uint256) private address_tx_counter_map; // address => accumulated exchange times
 
-    function get_address_tx_counter(
-        address addr
-    ) public view returns (uint256) {
+    function tx_counter_of(address addr) public view returns (uint256) {
         return address_tx_counter_map[addr];
     }
 
