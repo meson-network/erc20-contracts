@@ -30,12 +30,12 @@ contract MSN_CREDIT_EXCHANGE {
     }
 
     function set_exchange_ratio(uint256 _new_ratio) external onlyContractOwner {
-        require(_new_ratio > 0, "exchange ratio shoud be bigger then 1");
+        require(_new_ratio > 0, "exchange ratio shoud be bigger then 0");
         exchange_ratio = _new_ratio;
     }
 
     function exchange(uint256 amount) public {
-        require(amount > 0, "exchange amount should bigger then 0");
+        require(amount > 0, "exchange amount should be bigger then 0");
 
         //transfer
         bool result = IERC20(msn_contract_address).transferFrom(
