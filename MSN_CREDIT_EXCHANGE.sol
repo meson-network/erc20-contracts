@@ -14,19 +14,25 @@ contract MSN_CREDIT_EXCHANGE {
     }
 
     mapping(address => uint256) private address_msn_credit_map; // address => msn credit amount
-    function get_address_msn_redit_amount(address addr) public view returns (uint256) {
+
+    function get_address_msn_credit_amount(
+        address addr
+    ) public view returns (uint256) {
         return address_msn_credit_map[addr];
     }
 
     mapping(address => uint256) private address_tx_counter_map; // address => accumulated exchange times
-    function get_address_tx_counter(address addr) public view returns (uint256) {
+
+    function get_address_tx_counter(
+        address addr
+    ) public view returns (uint256) {
         return address_tx_counter_map[addr];
     }
 
-    constructor(address _msn_contract_addr, uint256 _exchange_ratio) {
+    constructor(address _msn_contract_addr) {
         msn_contract_address = _msn_contract_addr;
         contract_owner = msg.sender;
-        exchange_ratio = _exchange_ratio;
+        exchange_ratio = 1;
     }
 
     function set_exchange_ratio(uint256 _new_ratio) external onlyContractOwner {
@@ -45,11 +51,11 @@ contract MSN_CREDIT_EXCHANGE {
         );
         require(result == true, "transfer error");
 
-        uint256 msn_redit = amount * exchange_ratio;
+        uint256 msn_credit = amount * exchange_ratio;
 
         address_msn_credit_map[msg.sender] =
             address_msn_credit_map[msg.sender] +
-            msn_redit;
+            msn_credit;
 
         address_tx_counter_map[msg.sender] =
             address_tx_counter_map[msg.sender] +
