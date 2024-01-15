@@ -3,12 +3,11 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
-contract MSN_AIRDROP {
+contract MSN_SIMPLE_CLAIM {
     address public msn_contract_address;
 
-    //mining
-    address public airdrop_signer;
-    mapping(uint256 => uint256) private airdrop_sig_amount_map; // airdrop signature id => amount
+    address public claim_signer;
+    mapping(uint256 => uint256) private claim_sig_amount_map; // claim signature id => amount
 
     address public contract_owner;
     modifier onlyContractOwner() {
@@ -21,19 +20,19 @@ contract MSN_AIRDROP {
         contract_owner = msg.sender;
     }
 
-    function check_airdrop_amount_from_signature(uint256 sig_id)
+    function check_claim_amount_from_signature(uint256 sig_id)
         public
         view
         returns (uint256)
     {
-        return airdrop_sig_amount_map[sig_id];
+        return claim_sig_amount_map[sig_id];
     }
 
-    function set_airdrop_signer(address _new_signer)
+    function set_claim_signer(address _new_signer)
         external
         onlyContractOwner
     {
-        airdrop_signer = _new_signer;
+        claim_signer = _new_signer;
     }
 
     /**
@@ -76,27 +75,27 @@ contract MSN_AIRDROP {
         }
     }
 
-    function check_airdrop_sig(
+    function check_claim_sig(
         uint256 sig_id,
         uint256 amount,
         bytes memory sig
     ) private view {
         bytes32 hash = keccak256(abi.encodePacked(sig_id, msg.sender, amount));
         address msg_signer = recover(hash, sig);
-        require(msg_signer == airdrop_signer, "signature error");
+        require(msg_signer == claim_signer, "signature error");
     }
 
-    function airdrop_claim(
+    function claim(
         uint256 signature_id,
         uint256 amount,
         bytes memory signature
     ) public {
         require(amount > 0, "claim amount should be bigger then 0");
 
-        require(airdrop_sig_amount_map[signature_id] == 0, "repeated claim");
-        airdrop_sig_amount_map[signature_id] = amount;
+        require(claim_sig_amount_map[signature_id] == 0, "repeated claim");
+        claim_sig_amount_map[signature_id] = amount;
 
-        check_airdrop_sig(signature_id, amount, signature);
+        check_claim_sig(signature_id, amount, signature);
 
         //transfer
         bool result = IERC20(msn_contract_address).transfer(msg.sender, amount);
