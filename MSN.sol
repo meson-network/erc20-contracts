@@ -19,7 +19,9 @@ contract MSN is ERC20 {
         _mint(msg.sender, ini_supply * (10 ** uint256(decimals())));
     }
 
-    //mint and burn functions for cross-chain asset balancing
+    //mint and burn functions for cross-chain token amount balancing
+    //sum(tokens on all chains) == 100% tokens amount  
+    //token price on each chain is equal
 
     event Mint_log(address addr, uint256 amount, string log);
 
