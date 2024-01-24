@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL v3
 pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v4.9/contracts/token/ERC20/IERC20.sol";
 
 contract MSN_MINING_CLAIM {
     address public msn_contract_address;
