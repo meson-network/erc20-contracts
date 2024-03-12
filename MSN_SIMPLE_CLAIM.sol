@@ -28,11 +28,15 @@ contract MSN_SIMPLE_CLAIM {
         return claim_sig_amount_map[sig_id];
     }
 
+    event Set_claim_signer_log(address addr);
+
     function set_claim_signer(address _new_signer)
         external
         onlyContractOwner
     {
+        require(address(_new_signer) != address(0)); 
         claim_signer = _new_signer;
+        emit Set_claim_signer_log(_new_signer);
     }
 
     /**
@@ -100,6 +104,11 @@ contract MSN_SIMPLE_CLAIM {
         //transfer
         bool result = IERC20(msn_contract_address).transfer(msg.sender, amount);
         require(result == true, "transfer error");
+    }
+
+    function forbid_claim(uint256 signature_id) public {
+        require(claim_sig_amount_map[signature_id] == 0, "already claimed");
+        claim_sig_amount_map[signature_id] = 1;
     }
 
     function transfer_msn_to_owner(uint256 amount) public onlyContractOwner {

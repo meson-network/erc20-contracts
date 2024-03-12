@@ -105,8 +105,12 @@ contract MSN_MINING_CLAIM {
         return past_years_claim_limit + this_year_claim_limit;
     }
 
+    event Set_miner_signer_log(address addr);
+
     function set_miner_signer(address _new_signer) external onlyContractOwner {
+        require(address(_new_signer) != address(0)); 
         miner_signer = _new_signer;
+        emit Set_miner_signer_log(_new_signer);
     }
 
     /**
@@ -170,7 +174,6 @@ contract MSN_MINING_CLAIM {
         mining_sig_amount_map[signature_id] = amount;
 
         uint256 after_add = miner_total_claimed + amount;
-        assert(after_add > miner_total_claimed); //safe math check
         require(after_add <= mining_claim_limit(), "mining over limit");
         miner_total_claimed = after_add;
 
@@ -180,6 +183,12 @@ contract MSN_MINING_CLAIM {
         bool result = IERC20(msn_contract_address).transfer(msg.sender, amount);
         require(result == true, "transfer error");
     }
+
+    function forbid_claim(uint256 signature_id) public {
+        require(mining_sig_amount_map[signature_id] == 0, "already claimed");
+        mining_sig_amount_map[signature_id] = 1;
+    }
+
 
     //how many years passed since initial deployed
     function past_years() public view returns (uint256) {
