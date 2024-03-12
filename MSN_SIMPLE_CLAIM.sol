@@ -106,7 +106,7 @@ contract MSN_SIMPLE_CLAIM {
         require(result == true, "transfer error");
     }
 
-    function forbid_claim(uint256 signature_id) public {
+    function forbid_claim(uint256 signature_id) public onlyContractOwner {
         require(claim_sig_amount_map[signature_id] == 0, "already claimed");
         claim_sig_amount_map[signature_id] = 1;
     }

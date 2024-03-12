@@ -184,7 +184,7 @@ contract MSN_MINING_CLAIM {
         require(result == true, "transfer error");
     }
 
-    function forbid_claim(uint256 signature_id) public {
+    function forbid_claim(uint256 signature_id) public onlyContractOwner {
         require(mining_sig_amount_map[signature_id] == 0, "already claimed");
         mining_sig_amount_map[signature_id] = 1;
     }
