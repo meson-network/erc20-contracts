@@ -35,11 +35,11 @@ contract MSN_STAKE {
     }
 
     function cal_credit_reward(address addr) public view returns (uint256) {
-        return (stake_token_map[addr] *(block.timestamp - stake_last_time_map[msg.sender])) / 1000;
+        return (stake_token_map[addr] *(block.timestamp - stake_last_time_map[addr])) / 1000;
     }
 
     function get_total_credit_prediction(address addr) external view returns (uint256) {
-        return cal_credit_reward(addr) + credit_map[msg.sender];
+        return cal_credit_reward(addr) + credit_map[addr];
     }
 
     function harvest() public {
