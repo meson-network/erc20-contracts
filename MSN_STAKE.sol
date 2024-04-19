@@ -81,8 +81,8 @@ contract MSN_STAKE {
         stake_token_map[msg.sender] -= amount;
 
         //transfer
-        bool result = IERC20(msn_contract_address).transfer(msg.sender, amount);
-        require(result == true, "transfer error");
+        bool t_result = IERC20(msn_contract_address).transfer(msg.sender, amount);
+        require(t_result == true, "transfer error");
 
         emit unstake_EVENT(msg.sender, amount);
     }
