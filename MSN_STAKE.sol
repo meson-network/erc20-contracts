@@ -78,11 +78,12 @@ contract MSN_STAKE {
 
         harvest();
 
+        stake_token_map[msg.sender] -= amount;
+
         //transfer
         bool result = IERC20(msn_contract_address).transfer(msg.sender, amount);
         require(result == true, "transfer error");
 
-        stake_token_map[msg.sender] -= amount;
         emit unstake_EVENT(msg.sender, amount);
     }
 }
