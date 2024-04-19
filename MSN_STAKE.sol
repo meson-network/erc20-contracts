@@ -38,7 +38,7 @@ contract MSN_STAKE {
         return (stake_token_map[addr] *(block.timestamp - stake_last_time_map[addr])) / 1000;
     }
 
-    function get_total_credit_prediction(address addr) external view returns (uint256) {
+    function get_credit_prediction(address addr) external view returns (uint256) {
         return cal_credit_reward(addr) + credit_map[addr];
     }
 
